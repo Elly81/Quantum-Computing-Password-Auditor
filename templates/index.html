@@ -1,0 +1,52 @@
+<!-- Quantum Computing Password Auditor (QCPA) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Computing Password Auditor (QCPA)</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Quantum Computing Password Auditor (QCPA)</h1>
+        <form id="passwordForm">
+            <label for="password">Enter Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Audit Password</button>
+        </form>
+
+        <div id="results" class="hidden">
+            <h2>Audit Results</h2>
+            <p><strong>Entropy:</strong> <span id="entropy"></span> bits</p>
+            <p><strong>Classical Crack Time:</strong> <span id="classicalTime"></span></p>
+            <p><strong>Quantum Crack Time (Grover):</strong> <span id="quantumTime"></span></p>
+            <p><strong>Quantum Safety Rating:</strong> <span id="quantumRating"></span></p>
+            <p><strong>Suggestions:</strong> <span id="suggestions"></span></p>
+        </div>
+    </div>
+
+    <script>
+    document.getElementById("passwordForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const password = document.getElementById("password").value;
+
+        const response = await fetch("/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password: password })
+        });
+
+        const data = await response.json();
+
+        document.getElementById("entropy").textContent = data.entropy;
+        document.getElementById("classicalTime").textContent = data.classical_time;
+        document.getElementById("quantumTime").textContent = data.quantum_time;
+        document.getElementById("quantumRating").textContent = data.rating;
+        document.getElementById("suggestions").textContent = data.suggestions;
+
+        document.getElementById("results").classList.remove("hidden");
+    });
+    </script>
+</body>
+</html>
